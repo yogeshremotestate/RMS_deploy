@@ -1,0 +1,3 @@
+
+ALTER TABLE dishes
+    ADD COLUMN owner_id INT REFERENCES users(id) ON DELETE CASCADE;

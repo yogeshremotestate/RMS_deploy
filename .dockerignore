@@ -1,0 +1,7 @@
+docker-compose.yml
+.env
+# Ignore these files and directories in the Docker context
+*.yaml
+*.yml
+node_modules
+.git

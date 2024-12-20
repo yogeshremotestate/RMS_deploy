@@ -1,0 +1,424 @@
+definitions:
+  models.Address:
+    properties:
+      createdAt:
+        type: string
+      id:
+        type: integer
+      latitude:
+        type: number
+      longitude:
+        type: number
+      name:
+        type: string
+      userID:
+        type: integer
+    type: object
+  models.AddressRequestBody:
+    properties:
+      latitude:
+        type: number
+      longitude:
+        type: number
+      name:
+        type: string
+    type: object
+  models.Dish:
+    properties:
+      createdAt:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      ownerID:
+        type: integer
+      price:
+        type: number
+      restaurantID:
+        type: integer
+      tags:
+        items:
+          type: string
+        type: array
+      updatedAt:
+        type: string
+    type: object
+  models.DishRequestBody:
+    properties:
+      name:
+        type: string
+      price:
+        type: number
+      restaurant_id:
+        type: integer
+      tags:
+        items:
+          type: string
+        type: array
+    type: object
+  models.LoginRequestBody:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+    type: object
+  models.Restaurant:
+    properties:
+      createdAt:
+        type: string
+      dishes:
+        items:
+          $ref: '#/definitions/models.Dish'
+        type: array
+      id:
+        type: integer
+      latitude:
+        type: number
+      longitude:
+        type: number
+      name:
+        type: string
+      ownerID:
+        type: integer
+      updatedAt:
+        type: string
+    type: object
+  models.RestaurantRequestBody:
+    properties:
+      latitude:
+        type: number
+      longitude:
+        type: number
+      name:
+        type: string
+    type: object
+  models.Role:
+    enum:
+    - admin
+    - sub-admin
+    - user
+    type: string
+    x-enum-varnames:
+    - Admin
+    - SubAdmin
+    - User
+  models.UserRequestBody:
+    properties:
+      email:
+        type: string
+      name:
+        type: string
+      password:
+        type: string
+      role:
+        type: string
+    type: object
+  models.Users:
+    properties:
+      createdAt:
+        type: string
+      createdBy:
+        type: integer
+      email:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      passwordHash:
+        type: string
+      role:
+        $ref: '#/definitions/models.Role'
+      updatedAt:
+        type: string
+    type: object
+info:
+  contact:
+    email: support@swagger.io
+    name: API Support
+    url: http://www.swagger.io/support
+  description: Testing Swagger APIs.
+  termsOfService: http://google.com/
+  title: RMS APIs
+  version: "1.0"
+paths:
+  /admin/create/user:
+    post:
+      consumes:
+      - application/json
+      description: Register User new account
+      parameters:
+      - description: Signup Credentials
+        in: body
+        name: credentials
+        required: true
+        schema:
+          $ref: '#/definitions/models.UserRequestBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+      summary: SignUpUser
+      tags:
+      - Sub-Admin
+      - Admin
+  /admin/get/restaurants:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve all Restaurants for the logged-in Admin
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of Restaurants
+          schema:
+            items:
+              $ref: '#/definitions/models.Restaurant'
+            type: array
+      security:
+      - BearerAuth: []
+      summary: Get All Restaurants for Admin
+      tags:
+      - Admin
+      - Sub-Admin
+  /admin/sub-admins:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve all Sub-Admin for logged-in Admin user
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of Sub-Admins
+          schema:
+            items:
+              $ref: '#/definitions/models.Users'
+            type: array
+      security:
+      - BearerAuth: []
+      summary: Get Sub-Admins for Admin
+      tags:
+      - Admin
+  /dishes/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve all Dishes for Restaurants for the logged-in user
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of Dishes or restaurant
+          schema:
+            items:
+              $ref: '#/definitions/models.Dish'
+            type: array
+      security:
+      - BearerAuth: []
+      summary: Get All Dishes for restaurant
+      tags:
+      - Basic
+  /login:
+    post:
+      consumes:
+      - application/json
+      description: Authenticate a user and return a token
+      parameters:
+      - description: Login Credentials
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/models.LoginRequestBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+      summary: LoginUser
+      tags:
+      - Basic
+  /restaurants:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve all Restaurants for the logged-in user
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of Restaurants
+          schema:
+            items:
+              $ref: '#/definitions/models.Restaurant'
+            type: array
+      security:
+      - BearerAuth: []
+      summary: Get All Restaurants for all roles
+      tags:
+      - Basic
+  /sub-admin/create/dish:
+    post:
+      consumes:
+      - application/json
+      description: Create Dishes for Restaurants by Logged in Sub-Admin
+      parameters:
+      - description: Signup Credentials
+        in: body
+        name: credentials
+        required: true
+        schema:
+          $ref: '#/definitions/models.DishRequestBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+      summary: Create Dishes
+      tags:
+      - Sub-Admin
+  /sub-admin/create/restaurant:
+    post:
+      consumes:
+      - application/json
+      description: Create Restaurant by Logged in Sub-Admin
+      parameters:
+      - description: Signup Credentials
+        in: body
+        name: credentials
+        required: true
+        schema:
+          $ref: '#/definitions/models.RestaurantRequestBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+      summary: Create Restaurant
+      tags:
+      - Sub-Admin
+  /sub-admin/create/user:
+    post:
+      consumes:
+      - application/json
+      description: Register User new account
+      parameters:
+      - description: Signup Credentials
+        in: body
+        name: credentials
+        required: true
+        schema:
+          $ref: '#/definitions/models.UserRequestBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+      summary: SignUpUser
+      tags:
+      - Sub-Admin
+      - Admin
+  /sub-admin/get/restaurants:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve all Restaurants for the logged-in Admin
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of Restaurants
+          schema:
+            items:
+              $ref: '#/definitions/models.Restaurant'
+            type: array
+      security:
+      - BearerAuth: []
+      summary: Get All Restaurants for Admin
+      tags:
+      - Admin
+      - Sub-Admin
+  /sub-admin/get/users:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve all users for logged-in Admins/Sub-Admins user
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of Sub-Admins
+          schema:
+            items:
+              $ref: '#/definitions/models.Users'
+            type: array
+      security:
+      - BearerAuth: []
+      summary: Get users for Admins
+      tags:
+      - Admin
+      - Sub-Admin
+  /user/address:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve all Address for logged-in user
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of Address
+          schema:
+            items:
+              $ref: '#/definitions/models.Address'
+            type: array
+      security:
+      - BearerAuth: []
+      summary: Get All Address for User
+      tags:
+      - User
+    post:
+      consumes:
+      - application/json
+      description: Adding Address by Logged in User
+      parameters:
+      - description: Address Body
+        in: body
+        name: credentials
+        required: true
+        schema:
+          $ref: '#/definitions/models.AddressRequestBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+      summary: Adding Address
+      tags:
+      - User
+  /user/get-distance/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve Distance to Restaurant for logged-in user
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+      security:
+      - BearerAuth: []
+      summary: Distance to restaurant
+      tags:
+      - User
+securityDefinitions:
+  BearerAuth:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"
